@@ -56,7 +56,7 @@ function transformSchema(schema: DMMF.Schema, options: TransformConfig): Interna
 
   const inputTypes =
     schema.inputObjectTypes.model?.map((type) =>
-      transformInputType(type, options.globallyComputedInputs, options.atomicOperations)
+      transformInputType(type, options)
     ) ?? []
 
   const outputTypes =
@@ -71,7 +71,7 @@ function transformSchema(schema: DMMF.Schema, options: TransformConfig): Interna
 
   inputTypes.push(
     ...schema.inputObjectTypes.prisma.map((type) => {
-      return transformInputType(type, options.globallyComputedInputs, options.atomicOperations)
+      return transformInputType(type, options)
     })
   )
   outputTypes.push(
@@ -274,8 +274,7 @@ export async function addComputedInputs({
 
 function transformInputType(
   inputType: DMMF.InputType,
-  globallyComputedInputs: GlobalComputedInputs,
-  atomicOperations: boolean
+  options: TransformConfig
 ): InternalDMMF.InputType {
   const fieldNames = inputType.fields.map((field) => field.name)
   /**
@@ -285,16 +284,16 @@ function transformInputType(
    * at runtime so their values can be inferred alongside the
    * global values.
    */
-  const globallyComputedInputsInType = Object.keys(globallyComputedInputs).reduce(
+  const globallyComputedInputsInType = Object.keys(options.globallyComputedInputs).reduce(
     (args, key) =>
-      fieldNames.includes(key) ? Object.assign(args, { [key]: globallyComputedInputs[key] }) : args,
+      fieldNames.includes(key) ? Object.assign(args, { [key]: options.globallyComputedInputs[key] }) : args,
     {} as GlobalComputedInputs
   )
   return {
     ...inputType,
     fields: inputType.fields
-      .filter((field) => !(field.name in globallyComputedInputs))
-      .map((field) => transformArg(field, atomicOperations)),
+      .filter((field) => !(field.name in options.globallyComputedInputs))
+      .map((field) => transformArg(field, options.atomicOperations)),
     computedInputs: globallyComputedInputsInType,
   }
 }
