@@ -76,6 +76,22 @@ type FieldConfigData = {
 
 type PrismaClientFetcher = (ctx: Nexus.core.GetGen<'context'>) => any
 
+interface CapabilityDefaults {
+  create?: boolean;
+  connectOrCreate?: boolean;
+  delete?: boolean;
+  deleteMany?: boolean;
+  update?: boolean;
+  updateMany?: boolean;
+  upsert?: boolean;
+  set?: boolean;
+  connect?: boolean;
+  disconnect?: boolean;
+  pagination?: boolean;
+  ordering?: boolean;
+  filtering?: boolean;
+}
+
 export interface Options {
   // TODO return type should be Prisma Client
   /**
@@ -150,6 +166,12 @@ export interface Options {
    * @default true
    */
   atomicOperations?: boolean
+  /**
+   * Default crud capabilities
+   * 
+   * All capabilities are enabled by default
+   */
+  capabilities?: CapabilityDefaults
 }
 
 export interface InternalOptions extends Options {
