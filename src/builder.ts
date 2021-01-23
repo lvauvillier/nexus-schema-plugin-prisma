@@ -518,7 +518,7 @@ export class SchemaBuilder {
                   })
                   [field.name](args)
               }
-            : publisherConfig.alias != field.name
+            : publisherConfig.alias !== field.name
             ? (root) => root[field.name]
             : undefined
 
